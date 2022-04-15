@@ -30,7 +30,7 @@ jinja2="3.0.3"
 mypy="^0.940"
 pre-commit="2.9.2"
 pylint="2.5.2"
-detect-secrets="0.14.2"
+detect-secrets="1.2.0"
 black="19.10b0"
 isort="4.3.21"
 

@@ -285,7 +285,7 @@ reference = "default_pypi"
 
 [[package]]
 name = "detect-secrets"
-version = "0.14.2"
+version = "1.2.0"
 description = "Tool for detecting secrets in the codebase"
 category = "dev"
 optional = false
@@ -296,6 +296,7 @@ pyyaml = "*"
 requests = "*"
 
 [package.extras]
+gibberish = ["gibberish-detector"]
 word_list = ["pyahocorasick"]
 
 [package.source]
@@ -1156,7 +1157,7 @@ reference = "default_pypi"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.6"
-content-hash = "0f5016acd69fb6823ff16bd61f216833eae042dae6eda6690ce789bb075bce78"
+content-hash = "e3db4c20e5c4418ba59ecd38a24bb30bfb3a1ae65e7abddf382920101a7cac48"
 
 [metadata.files]
 alabaster = [
@@ -1267,7 +1268,8 @@ decli = [
     {file = "decli-0.5.2.tar.gz", hash = "sha256:f2cde55034a75c819c630c7655a844c612f2598c42c21299160465df6ad463ad"},
 ]
 detect-secrets = [
-    {file = "detect_secrets-0.14.2.tar.gz", hash = "sha256:7ec6349a17cc2efe381593f55db927d44dd955ec011eb391157b3a85caf34d88"},
+    {file = "detect_secrets-1.2.0-py3-none-any.whl", hash = "sha256:51a8fc5d89340ba6d0c688049fc3381a2f24c6fbaf2f542e15f5b873b95bafe3"},
+    {file = "detect_secrets-1.2.0.tar.gz", hash = "sha256:c160e897b3d0e81bf9cf0f6cc2e5e6434fa609a159f9a2849fcae0a08b4e2a30"},
 ]
 distlib = [
     {file = "distlib-0.3.4-py2.py3-none-any.whl", hash = "sha256:6564fe0a8f51e734df6333d08b8b94d4ea8ee6b99b5ed50613f731fd4089f34b"},
