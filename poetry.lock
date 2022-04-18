@@ -232,7 +232,7 @@ reference = "default_pypi"
 
 [[package]]
 name = "commitizen"
-version = "2.20.1"
+version = "2.24.0"
 description = "Python commitizen client tool"
 category = "dev"
 optional = false
@@ -248,6 +248,7 @@ pyyaml = ">=3.08"
 questionary = ">=1.4.0,<2.0.0"
 termcolor = ">=1.1,<2.0"
 tomlkit = ">=0.5.3,<1.0.0"
+typing-extensions = ">=4.0.1,<5.0.0"
 
 [package.source]
 type = "legacy"
@@ -1247,7 +1248,7 @@ reference = "default_pypi"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.6"
-content-hash = "1eb274ceebe4bfd502081de31fe9b6d334025e03989689062a83ac2b0c15286c"
+content-hash = "769f17cbbb431786dcb81db8dcd79ac9ab99f52767bb7f4a76d025295c127260"
 
 [metadata.files]
 alabaster = [
@@ -1307,8 +1308,8 @@ colorama = [
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
 commitizen = [
-    {file = "commitizen-2.20.1-py3-none-any.whl", hash = "sha256:03d234f782e075a80566d11f8b868ab145724278b0c7191cd9e5dc5bd4818a4a"},
-    {file = "commitizen-2.20.1.tar.gz", hash = "sha256:c1a3103bb0ec18550e25471e9f03e506eb24b64bb6bd5ea5883c9664a3de85bd"},
+    {file = "commitizen-2.24.0-py3-none-any.whl", hash = "sha256:08901b176eac6a224761d613b58fb8b19bc7d00a49282a4d4bc39e3bdb3afb50"},
+    {file = "commitizen-2.24.0.tar.gz", hash = "sha256:c867c26a394b255a93a8a225dae793dd361b25160be39015d2aa75d730728295"},
 ]
 coverage = [
     {file = "coverage-6.3.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:eeffd96882d8c06d31b65dddcf51db7c612547babc1c4c5db6a011abe9798525"},
