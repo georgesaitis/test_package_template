@@ -665,11 +665,11 @@ reference = "default_pypi"
 
 [[package]]
 name = "pre-commit"
-version = "2.9.2"
+version = "2.18.1"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
 category = "dev"
 optional = false
-python-versions = ">=3.6.1"
+python-versions = ">=3.7"
 
 [package.dependencies]
 cfgv = ">=2.0.0"
@@ -1247,7 +1247,7 @@ reference = "default_pypi"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.6"
-content-hash = "1eb274ceebe4bfd502081de31fe9b6d334025e03989689062a83ac2b0c15286c"
+content-hash = "c91349c42c6c1b24d9072f1c6b5d4c4cdcea0c0f291592e78451aef22ce2fbdb"
 
 [metadata.files]
 alabaster = [
@@ -1551,8 +1551,8 @@ platformdirs = [
     {file = "platformdirs-2.5.1.tar.gz", hash = "sha256:7535e70dfa32e84d4b34996ea99c5e432fa29a708d0f4e394bbcb2a8faa4f16d"},
 ]
 pre-commit = [
-    {file = "pre_commit-2.9.2-py2.py3-none-any.whl", hash = "sha256:949b13efb7467ae27e2c8f9e83434dacf2682595124d8902554a4e18351e5781"},
-    {file = "pre_commit-2.9.2.tar.gz", hash = "sha256:e31c04bc23741194a7c0b983fe512801e151a0638c6001c49f2bd034f8a664a1"},
+    {file = "pre_commit-2.18.1-py2.py3-none-any.whl", hash = "sha256:02226e69564ebca1a070bd1f046af866aa1c318dbc430027c50ab832ed2b73f2"},
+    {file = "pre_commit-2.18.1.tar.gz", hash = "sha256:5d445ee1fa8738d506881c5d84f83c62bb5be6b2838e32207433647e8e5ebe10"},
 ]
 prompt-toolkit = [
     {file = "prompt_toolkit-3.0.29-py3-none-any.whl", hash = "sha256:62291dad495e665fca0bda814e342c69952086afb0f4094d0893d357e5c78752"},
