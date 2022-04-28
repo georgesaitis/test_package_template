@@ -41,7 +41,7 @@ freezegun="1.1.0"
 commitizen = "2.20.1"
 Sphinx="1.8.4"
 sphinxcontrib-confluencebuilder = "1.8.0"
-sphinx_rtd_theme="0.4.3"
+sphinx_rtd_theme="1.0.0"
 m2r="0.2.1"
 mistune="0.8.4"
 [tool.poetry.scripts]
