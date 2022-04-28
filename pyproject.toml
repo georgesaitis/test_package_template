@@ -43,7 +43,7 @@ Sphinx="1.8.4"
 sphinxcontrib-confluencebuilder = "1.8.0"
 sphinx_rtd_theme="0.4.3"
 m2r="0.2.1"
-mistune="0.8.4"
+mistune="2.0.2"
 [tool.poetry.scripts]
 run = "my_package.scripts.entrypoint:main"
 
