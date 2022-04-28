@@ -27,7 +27,7 @@ psycopg2-binary="2.9.3"
 jinja2="3.0.3"
 
 [tool.poetry.dev-dependencies]
-mypy="^0.940"
+mypy="^0.950"
 pre-commit="2.9.2"
 pylint="2.5.2"
 detect-secrets="0.14.2"
