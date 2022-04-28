@@ -144,7 +144,5 @@ texinfo_documents = [
 intersphinx_mapping = {'https://docs.python.org/': None}
 
 confluence_publish = True
-# confluence_space_key = '~259007579'
-# confluence_server_pass = 'MeUAgJeozvUokm1HBa2g4767'
-# confluence_server_url = 'https://orfium.atlassian.net/wiki/'
-# confluence_server_user = 'george.saitis@orfium.com'
+confluence_space_key = '~259007579'
+confluence_server_url = 'https://orfium.atlassian.net/wiki/'

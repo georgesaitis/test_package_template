@@ -94,7 +94,6 @@ jobs:
           architecture: x64
       - name: Checkout Repository
         uses: actions/checkout@main
-
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.1
         with:
@@ -119,35 +118,37 @@ jobs:
           path: "docs/_build/markdown"
         env:
           GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
-      - name: Upload docs to Confluence
-        run: poetry run sphinx-build -b confluence docs/ docs/_build/confluence -a
-
+      - name: Upload Docs to Confluence
+        run: poetry run sphinx-build -b confluence docs/ docs/_build/confluence -a -D confluence_server_user=$ATLASSIAN_USER -D confluence_server_pass=$ATLASSIAN_API_KEY
+        env:
+            ATLASSIAN_USER: ${{ secrets.ATLASSIAN_USER }}
+            ATLASSIAN_API_KEY: ${{ secrets.ATLASSIAN_API_KEY }}
 
   bump:
-      if: "!startsWith(github.event.head_commit.message, 'bump:') && github.ref == 'refs/heads/master'"
-      runs-on: ubuntu-latest
-      needs:
-        - unittest
-        - precommit
-        - documentation
-      steps:
-        - name: Setup Python
-          uses: actions/setup-python@v2
-          with:
-            python-version: 3.8.6
-            architecture: x64
-        - name: Checkout Repository
-          uses: actions/checkout@main
-          with:
-            token: ${{ secrets.ORG_ACCESS_TOKEN }}
-            fetch-depth: 0
-        - name: Install dependencies
-          run: pip install -U commitizen
-        - name: Create bump and changelog
-          uses: commitizen-tools/commitizen-action@master
-          with:
-            github_token: ${{ secrets.ORG_ACCESS_TOKEN }}
-            branch: master
+    if: "!startsWith(github.event.head_commit.message, 'bump:') && github.ref == 'refs/heads/master'"
+    runs-on: ubuntu-latest
+    needs:
+      - unittest
+      - precommit
+      - documentation
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8.6
+          architecture: x64
+      - name: Checkout Repository
+        uses: actions/checkout@main
+        with:
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          fetch-depth: 0
+      - name: Install dependencies
+        run: pip install -U commitizen
+      - name: Create bump and changelog
+        uses: commitizen-tools/commitizen-action@master
+        with:
+          github_token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          branch: master
 
   build:
     if: startsWith(github.ref, 'refs/tags/v')
