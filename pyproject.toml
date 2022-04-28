@@ -31,7 +31,7 @@ mypy="^0.940"
 pre-commit="2.9.2"
 pylint="2.5.2"
 detect-secrets="0.14.2"
-black="19.10b0"
+black="22.3.0"
 isort="4.3.21"
 
 mock="4.0.3"
