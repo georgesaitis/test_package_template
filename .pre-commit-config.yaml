@@ -1,0 +1,88 @@
+default_stages:
+  - commit
+exclude: node_modules|.git|.tox
+fail_fast: true
+repos:
+  - hooks:
+      - id: detect-secrets
+        args: [ '--baseline', '.pre-commit/.secrets.baseline' ]
+        exclude: (config/settings/test.py|/static|.html|local|README.md|poetry.lock)
+    repo: https://github.com/Yelp/detect-secrets.git
+    rev: v0.14.2
+
+  - hooks:
+      - id: check-merge-conflict
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-json
+        files: \.(json)$
+      - id: check-toml
+        files: \.(toml)$
+      - id: check-yaml
+        files: \.(yaml)$
+      - id: fix-encoding-pragma
+        args: [ --remove ]
+    repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+
+  - hooks:
+      - id: bandit
+        args: [ --verbose, -ll, --recursive, . ]
+    repo: https://github.com/PyCQA/bandit
+    rev: 1.6.3
+
+  - hooks:
+      - id: isort
+        entry: isort
+    repo: https://github.com/pre-commit/mirrors-isort
+    rev: v4.3.21
+
+  - hooks:
+      - exclude: (/settings/)
+        id: black
+        require_serial: true
+        types:
+          - python
+    repo: https://github.com/ambv/black
+    rev: stable
+
+  - hooks:
+      - args:
+          - --config=.pre-commit/setup.cfg
+        id: flake8
+    repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.3
+
+  - hooks:
+      - entry: pylint --rcfile=.pre-commit/.pylintrc
+        exclude: (/settings/)
+        files: \.py$
+        id: system
+        language: system
+        name: PyLint
+    repo: local
+
+  - hooks:
+      - entry: mypy
+        args: [ "--config-file=pyproject.toml", "." ]
+        id: mypy
+        language: system
+        name: mypy
+        pass_filenames: false
+    repo: local
+
+  - hooks:
+      - id: commitizen
+        stages:
+          - commit-msg
+    repo: https://github.com/commitizen-tools/commitizen
+    rev: v2.1.0
+
+  - hooks:
+    - id: hadolint-docker
+      name: Lint Dockerfiles
+      description: Runs hadolint Docker image to lint Dockerfiles
+      language: docker_image
+      types: [ "dockerfile" ]
+      entry: ghcr.io/hadolint/hadolint:v2.9.3 hadolint
+    repo: local

@@ -1,0 +1,260 @@
+name: Ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "develop"
+      - "main"
+    tags:
+      - '*'
+
+jobs:
+  precommit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8.6
+          architecture: x64
+      - name: Checkout Repository
+        uses: actions/checkout@main
+      - name: Install Poetry
+        run: make dep
+      
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-3.8.6-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: make install
+      - name: Install library
+        run: make install-as-library
+      - name: Run pre-commit
+        run: make pre-commit
+      
+
+  unittest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8.6
+          architecture: x64
+      - name: Checkout Repository
+        uses: actions/checkout@main
+      - name: Install Poetry
+        run: make dep
+      
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-3.8.6-${{ hashFiles('**/poetry.lock') }}
+      
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: make install
+      - name: Install library
+        run: make install-as-library
+      - name: Run tests
+        run: make test-coverage
+      - name: Print coverage report
+        run: make coverage-report
+
+  
+  documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8.6
+          architecture: x64
+      - name: Checkout Repository
+        uses: actions/checkout@main
+      - name: Install Poetry
+        run: make dep
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-3.8.6-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: make install
+      - name: Install library
+        run: make install-as-library
+      - name: Run sphinx build
+        run: make build-documentation
+      - name: Upload documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: documentation
+          path: docs/_build/html
+      - name: Run markdown sphinx build
+        run: make build-markdown-documentation
+      - name: Upload docs to GitHub Wiki
+        uses: SwiftDocOrg/github-wiki-publish-action@v1
+        with:
+          path: "docs/_build/markdown"
+        env:
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
+      - name: Upload Docs to Confluence
+        run: make build-confluence-documentation
+        env:
+          ATLASSIAN_USER: ${{ secrets.ATLASSIAN_USER }}
+          ATLASSIAN_API_KEY: ${{ secrets.ATLASSIAN_API_KEY }}
+          
+
+  bump:
+      if: "!startsWith(github.event.head_commit.message, 'bump:') && github.ref == 'refs/heads/main'"
+      runs-on: ubuntu-latest
+      needs:
+        - precommit
+        - unittest
+        - documentation
+      steps:
+        - name: Setup Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: 3.8.6
+            architecture: x64
+        - name: Checkout Repository
+          uses: actions/checkout@main
+          with:
+            token: ${{ secrets.ORG_ACCESS_TOKEN }}
+            fetch-depth: 0
+        - name: Install dependencies
+          run: make install
+        - name: Create bump and changelog
+          uses: commitizen-tools/commitizen-action@master
+          with:
+            github_token: ${{ secrets.ORG_ACCESS_TOKEN }}
+            branch: main
+        
+
+  build:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    needs:
+      - precommit
+      - unittest
+      - documentation
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      AWS_ACCESS_KEY_ID: ${{ secrets.PYTHON_PACKAGE_PUBLISHER_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.PYTHON_PACKAGE_PUBLISHER_AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: us-east-1
+    strategy:
+      matrix:
+        python: [ 3.8 ]
+    outputs:
+      s3path: ${{ steps.s3bucket.outputs.S3PATH }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install Poetry
+        run: make dep
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies for Python ${{ matrix.python }}
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: make install
+      - name: Install library for Python ${{ matrix.python }}
+        run: make install-as-library
+      - name: Build and publish for Python ${{ matrix.python }}
+        run: |
+          poetry build
+      - name: Get version from tag
+        id: tag_name
+        run: |
+          echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+        shell: bash
+      - name: Set repo var
+        id: repo
+        run: |
+          echo ::set-env name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
+          echo ::set-env name=VERSION::${{ steps.tag_name.outputs.VERSION }}
+        shell: bash
+      - name: Set wheel filename var
+        run: echo "::set-env name=WHEEL::$(basename $(ls dist/*.whl | head -1))"
+      - name: Copy artifacts to S3 bucket
+        id: s3bucket
+        run: |
+          export S3KEY=${REPOSITORY_NAME}/${VERSION}/${GITHUB_SHA}/python_${{ matrix.python }}/${WHEEL}
+          aws s3 cp dist/$WHEEL s3://orfium-python-packages/${S3KEY}
+          echo "::set-output name=S3PATH::${REPOSITORY_NAME}/${VERSION}/${GITHUB_SHA}"
+    
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    needs:
+      - precommit
+      - unittest
+      - build
+      - documentation
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      AWS_ACCESS_KEY_ID: ${{ secrets.PYTHON_PACKAGE_PUBLISHER_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.PYTHON_PACKAGE_PUBLISHER_AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: us-east-1
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@main
+        with:
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8.6
+          architecture: x64
+      - name: Get version from tag
+        id: tag_name
+        run: |
+          echo ::set-output name=current_version::${GITHUB_REF#refs/tags/v}
+        shell: bash
+      - name: Get notes
+        id: generate_notes
+        uses: anmarkoulis/commitizen-changelog-reader@v1.0.1
+        with:
+          tag_name: ${{ github.ref }}
+          changelog: CHANGELOG.md
+      - name: Get S3 bucket artifacts URL
+        id: get_s3_artifact_urls
+        run: |
+          echo ::set-env name=WHEEL3::$(aws s3 ls s3://orfium-python-packages/${{ needs.build.outputs.s3path }}/python_3.8/ | awk '{print $(NF)}')
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_ACCESS_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          prerelease: false
+          draft: false
+          body: |
+            Use the following url to install this version of the package:
+            ### Python 3.8 release
+            https://orfium-python-packages.s3.amazonaws.com/${{ needs.build.outputs.s3path }}/python_3.8/${{ env.WHEEL3 }}
+            ${{join(fromJson(steps.generate_notes.outputs.notes).notes, '')}}
+      
+  
