@@ -95,7 +95,7 @@ jobs:
       - name: Run sphinx build
         run: make build-documentation
       - name: Upload documentation
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: documentation
           path: docs/_build/html
