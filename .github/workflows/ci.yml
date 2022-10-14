@@ -25,7 +25,7 @@ jobs:
       
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: .venv
           key: venv-${{ runner.os }}-3.8.6-${{ hashFiles('**/poetry.lock') }}
@@ -53,7 +53,7 @@ jobs:
       
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: .venv
           key: venv-${{ runner.os }}-3.8.6-${{ hashFiles('**/poetry.lock') }}
@@ -83,7 +83,7 @@ jobs:
         run: make dep
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: .venv
           key: venv-${{ runner.os }}-3.8.6-${{ hashFiles('**/poetry.lock') }}
@@ -169,7 +169,7 @@ jobs:
         run: make dep
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/poetry.lock') }}
