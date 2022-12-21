@@ -233,7 +233,7 @@ jobs:
         shell: bash
       - name: Get notes
         id: generate_notes
-        uses: anmarkoulis/commitizen-changelog-reader@v1.0.1
+        uses: anmarkoulis/commitizen-changelog-reader@v1.1.1
         with:
           tag_name: ${{ github.ref }}
           changelog: CHANGELOG.md
