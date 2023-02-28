@@ -160,7 +160,7 @@ jobs:
       s3path: ${{ steps.s3bucket.outputs.S3PATH }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:
